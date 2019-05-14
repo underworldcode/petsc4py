@@ -1,4 +1,6 @@
 #include "petsc/private/vecimpl.h"
+#include "petsc/private/petscfeimpl.h"
+#include "petsc/private/dtimpl.h"
 #include "petsc/private/matimpl.h"
 #include "petsc/private/pcimpl.h"
 #include "petsc/private/kspimpl.h"
