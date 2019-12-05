@@ -299,5 +299,17 @@ cdef api PetscFE PyPetscFE_Get(object arg) except ? NULL:
     retv = ob.fe
     return retv
 
+# -- QUAD --
+
+cdef api object PyPetscQuad_New(PetscQuadrature arg):
+    cdef Quad retv = Quad()
+    setref(&retv.quad, arg)
+    return retv
+
+cdef api PetscQuadrature PyPetscQuad_Get(object arg) except ? NULL:
+    cdef PetscQuadrature retv = NULL
+    cdef Quad ob = <Quad?> arg
+    retv = ob.quad
+    return retv
 
 #---------------------------------------------------------------------

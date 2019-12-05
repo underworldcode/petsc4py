@@ -427,7 +427,7 @@ cdef int register() except -1:
     PyPetscType_Register(PETSC_DM_CLASSID,          DM)
     PyPetscType_Register(PETSC_DS_CLASSID,          DS)
     PyPetscType_Register(PETSC_PARTITIONER_CLASSID, Partitioner)
-    #PyPetscType_Register(PETSC_FE_CLASSID,          FE)
+    PyPetscType_Register(PETSC_FE_CLASSID,          FE)
     return 0 # and we are done, enjoy !!
 
 # --------------------------------------------------------------------
