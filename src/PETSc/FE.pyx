@@ -50,3 +50,5 @@ cdef class FE(Object):
         CHKERR( PetscFESetType(self.fe, typeFE) )
         return self
 
+del FEType
+del FEOption

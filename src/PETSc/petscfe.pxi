@@ -15,4 +15,3 @@ cdef extern from * nogil:
     int PetscFESetFaceQuadrature(PetscFE, PetscQuadrature)
     int PetscFEDestroy(PetscFE*)
     
-

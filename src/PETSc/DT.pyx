@@ -14,3 +14,6 @@ cdef class Quad(Object):
     def __cinit__(self):
         self.obj = <PetscObject*> &self.quad
         self.quad = NULL
+
+del QuadType
+del QuadOption

@@ -286,4 +286,18 @@ cdef api PetscPartitioner PyPetscPartitioner_Get(object arg) except ? NULL:
     retv = ob.part
     return retv
 
+# -- FE --
+
+cdef api object PyPetscFE_New(PetscFE arg):
+    cdef FE retv = FE()
+    setref(&retv.fe, arg)
+    return retv
+
+cdef api PetscFE PyPetscFE_Get(object arg) except ? NULL:
+    cdef PetscFE retv = NULL
+    cdef FE ob = <FE?> arg
+    retv = ob.fe
+    return retv
+
+
 #---------------------------------------------------------------------
