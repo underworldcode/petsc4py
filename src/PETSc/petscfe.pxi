@@ -7,6 +7,7 @@ cdef extern from * nogil:
     PetscFEType PETSCFEOPENCL
     PetscFEType PETSCFECOMPOSITE
 
+    int PetscFECreate(MPI_Comm, PetscFE*)
     int PetscFECreateDefault(MPI_Comm, PetscInt, PetscInt, PetscBool, const char [], PetscInt, PetscFE*) 
     int PetscFESetType(PetscFE, PetscFEType)
     int PetscFEGetQuadrature(PetscFE, PetscQuadrature*)

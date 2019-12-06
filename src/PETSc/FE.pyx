@@ -17,6 +17,17 @@ cdef class FE(Object):
         self.obj = <PetscObject*> &self.fe
         self.fe = NULL
 
+    def destroy(self):
+        CHKERR( PetscFEDestroy(&self.fe) )
+        return self
+
+    def create(self, comm=None):
+        cdef MPI_Comm ccomm = def_Comm(comm, PETSC_COMM_DEFAULT)
+        cdef PetscFE newfe = NULL
+        CHKERR( PetscFECreate(ccomm, &newfe) )
+        PetscCLEAR(self.obj); self.fe = newfe
+        return self
+
     def createDefault(self, dim, Nc, isSimplex, qorder, comm=None):
         cdef MPI_Comm ccomm = def_Comm(comm, PETSC_COMM_DEFAULT)
         cdef PetscFE newfe = NULL
