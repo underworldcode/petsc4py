@@ -145,6 +145,7 @@ include "petscdmplex.pxi"
 include "petscdmstag.pxi"
 include "petscdmcomposite.pxi"
 include "petscdmshell.pxi"
+include "petscdmlabel.pxi"
 include "petscpartitioner.pxi"
 include "petsclinesearch.pxi"
 
@@ -182,6 +183,7 @@ include "DMPlex.pyx"
 include "DMStag.pyx"
 include "DMComposite.pyx"
 include "DMShell.pyx"
+include "DMLabel.pyx"
 include "Partitioner.pyx"
 
 # --------------------------------------------------------------------
@@ -373,6 +375,7 @@ cdef extern from *:
     PetscClassId PETSC_DM_CLASSID          "DM_CLASSID"
     PetscClassId PETSC_DS_CLASSID          "PETSCDS_CLASSID"
     PetscClassId PETSC_PARTITIONER_CLASSID "PETSCPARTITIONER_CLASSID"
+    PetscClassId PETSC_DMLABEL_CLASSID     "DMLABEL_CLASSID"
 
 cdef bint registercalled = 0
 
@@ -422,6 +425,7 @@ cdef int register() except -1:
     PyPetscType_Register(PETSC_DM_CLASSID,          DM)
     PyPetscType_Register(PETSC_DS_CLASSID,          DS)
     PyPetscType_Register(PETSC_PARTITIONER_CLASSID, Partitioner)
+    PyPetscType_Register(PETSC_DMLABEL_CLASSID,     DMLabel)
     return 0 # and we are done, enjoy !!
 
 # --------------------------------------------------------------------

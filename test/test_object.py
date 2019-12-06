@@ -247,6 +247,10 @@ class TestObjectAOMapping(BaseTestObject, unittest.TestCase):
     FACTORY = 'createMapping'
     TARGS = ([], [])
 
+class TestObjectDMLabel(BaseTestObject, unittest.TestCase):
+    CLASS  = PETSc.DMLabel
+    FACTORY = 'create'
+
 # --------------------------------------------------------------------
 
 import numpy

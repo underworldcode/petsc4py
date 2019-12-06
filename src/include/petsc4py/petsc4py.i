@@ -459,6 +459,8 @@ SWIG_From_dec(Type)(Type v) {
 %define SWIG_TYPECHECK_PETSC_DS            542 %enddef
 %define SWIG_TYPECHECK_PETSC_PARTITIONER   543 %enddef
 
+%define SWIG_TYPECHECK_PETSC_DMLABEL       560 %enddef
+
 
 %define %petsc4py_objt(Pkg, PyType, Type, CODE)
 
@@ -576,6 +578,7 @@ SWIG_From_dec(Type)(Type v) {
 %petsc4py_objt( Petsc , DM          , DM                     , PETSC_DM            )
 %petsc4py_objt( Petsc , DS          , PetscDS                , PETSC_DS            )
 %petsc4py_objt( Petsc , Partitioner , PetscPartitioner       , PETSC_PARTITIONER   )
+%petsc4py_objt( Petsc , DMLabel     , PetscDMLabel           , PETSC_DMLABEL       )
 
 /* ---------------------------------------------------------------- */
 

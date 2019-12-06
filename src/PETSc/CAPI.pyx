@@ -286,4 +286,17 @@ cdef api PetscPartitioner PyPetscPartitioner_Get(object arg) except ? NULL:
     retv = ob.part
     return retv
 
+# -- DMLabel --
+
+cdef api object PyPetscDMLabel_New(PetscDMLabel arg):
+    cdef DMLabel retv = DMLabel()
+    setref(&retv.dmlabel, arg)
+    return retv
+
+cdef api PetscDMLabel PyPetscDMLabel_Get(object arg) except ? NULL:
+    cdef PetscDMLabel retv = NULL
+    cdef DMLabel ob = <DMLabel?> arg
+    retv = ob.dmlabel
+    return retv
+
 #---------------------------------------------------------------------

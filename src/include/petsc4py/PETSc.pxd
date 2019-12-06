@@ -38,6 +38,9 @@ cdef extern from "petsc.h":
     struct _p_VecScatter
     ctypedef _p_VecScatter* PetscScatter "VecScatter"
 
+    struct _p_DMLabel
+    ctypedef _p_DMLabel* PetscDMLabel "DMLabel"
+
     struct _p_PetscSection
     ctypedef _p_PetscSection* PetscSection
 
@@ -213,6 +216,11 @@ ctypedef public api class Partitioner(Object) [
     ]:
     cdef PetscPartitioner part
 
+ctypedef public api class DMLabel(Object) [
+    type   PyPetscDMLabel_Type,
+    object PyPetscDMLabelObject,
+    ]:
+    cdef PetscDMLabel dmlabel
 # --------------------------------------------------------------------
 
 cdef MPI_Comm GetComm(object, MPI_Comm) except *
