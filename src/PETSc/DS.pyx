@@ -92,6 +92,14 @@ cdef class DS(Object):
         CHKERR( PetscDSGetComponents(self.ds, &cmps) )
         return array_i(nf, cmps)
 
+    # Need some work...
+    # Should be more general
+    def setDiscretisation(self, f, disc):
+        cdef PetscInt cf = asInt(f)
+        cdef FE fe = disc
+        CHKERR( PetscDSSetDiscretization(self.ds, cf, <PetscObject> fe.fe) )
+
+
 
 # --------------------------------------------------------------------
 
