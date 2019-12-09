@@ -3,24 +3,7 @@
 cdef extern from * nogil:
 
     ctypedef enum PetscDataType:
-        PETSC_DATATYPE_UNKNOWN
-        PETSC_DOUBLE
-        PETSC_COMPLEX
-        PETSC_LONG
-        PETSC_SHORT
-        PETSC_FLOAT
-        PETSC_CHAR
-        PETSC_BIT_LOGICAL
-        PETSC_ENUM
-        PETSC_BOOL
-        PETSC___FLOAT128
-        PETSC_OBJECT
-        PETSC_FUNCTION
-        PETSC_STRING
-        PETSC___FP16
-        PETSC_STRUCT
-        PETSC_INT
-        PETSC_INT64
+        pass
     
     ctypedef enum PetscDMSwarmType "DMSwarmType":
         DMSWARM_BASIC
@@ -54,8 +37,8 @@ cdef extern from * nogil:
     int DMSwarmRegisterPetscDatatypeField(PetscDM,const char[],PetscInt,PetscDataType)
 #    int DMSwarmRegisterUserStructField(PetscDM,const char[],size_t)
 #    int DMSwarmRegisterUserDatatypeField(PetscDM,const char[],size_t,PetscInt)
-#    int DMSwarmGetField(PetscDM,const char[],PetscInt*,PetscDataType*,void**)
-#    int DMSwarmRestoreField(PetscDM,const char[],PetscInt*,PetscDataType*,void**)
+    int DMSwarmGetField(PetscDM,const char[],PetscInt*,PetscDataType*,void**)
+    int DMSwarmRestoreField(PetscDM,const char[],PetscInt*,PetscDataType*,void**)
  
     int DMSwarmVectorDefineField(PetscDM,const char[])
  

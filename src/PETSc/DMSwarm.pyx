@@ -33,33 +33,39 @@ cdef class DMSwarm(DM):
     CollectType = DMSwarmCollectType
     PICLayoutType = DMSwarmPICLayoutType
 
+    def create(self, comm=None):
+        cdef MPI_Comm ccomm = def_Comm(comm, PETSC_COMM_DEFAULT)
+        cdef PetscDM newdm = NULL
+        CHKERR( DMCreate(ccomm, &newdm) )
+        PetscCLEAR(self.obj); self.dm = newdm
+        DM.setType(self, "swarm")
+        return self
+
     def createGlobalVectorFromField(self, fieldname):
-        cdef const_char *cval = NULL
+        cdef const_char *cfieldname = NULL
         cdef Vec vg = Vec()
-        fieldname = str2bytes(fieldname, &cval)
-        CHKERR( DMSwarmCreateGlobalVectorFromField(self.dm, fieldname, &vg.vec) )
+        fieldname = str2bytes(fieldname, &cfieldname)
+        CHKERR( DMSwarmCreateGlobalVectorFromField(self.dm, cfieldname, &vg.vec) )
         return vg
 
     def destroyGlobalVectorFromField(self, fieldname):
-        cdef const_char *cval = NULL
-        cdef Vec vg = Vec()
-        fieldname = str2bytes(fieldname, &cval)
-        CHKERR( DMSwarmDestroyGlobalVectorFromField(self.dm, fieldname, &vg.vec) )
-        return vg
+        cdef const_char *cfieldname = NULL
+        cdef PetscVec vec
+        fieldname = str2bytes(fieldname, &cfieldname)
+        CHKERR( DMSwarmDestroyGlobalVectorFromField(self.dm, cfieldname, &vec) )
 
     def createLocalVectorFromField(self, fieldname):
-        cdef const_char *cval = NULL
+        cdef const_char *cfieldname = NULL
         cdef Vec vl = Vec()
-        fieldname = str2bytes(fieldname, &cval)
-        CHKERR( DMSwarmCreateLocalVectorFromField(self.dm, fieldname, &vl.vec) )
+        fieldname = str2bytes(fieldname, &cfieldname)
+        CHKERR( DMSwarmCreateLocalVectorFromField(self.dm, cfieldname, &vl.vec) )
         return vl
 
     def destroyLocalVectorFromField(self, fieldname):
-        cdef const_char *cval = NULL
-        cdef Vec vl = Vec()
-        fieldname = str2bytes(fieldname, &cval)
-        CHKERR( DMSwarmDestroyLocalVectorFromField(self.dm, fieldname, &vl.vec) )
-        return vl
+        cdef const_char *cfieldname = NULL
+        cdef PetscVec vec
+        fieldname = str2bytes(fieldname, &cfieldname)
+        CHKERR( DMSwarmDestroyLocalVectorFromField(self.dm, cfieldname, &vec) )
 
     def initializeFieldRegister(self):
         CHKERR( DMSwarmInitializeFieldRegister(self.dm) )
@@ -75,10 +81,27 @@ cdef class DMSwarm(DM):
 
     def registerPetscDataTypeField(self, fieldname, blocksize, type):
         cdef const_char *cfieldname = NULL
-        cdef PetscDataType ctype = type
+        cdef PetscDataType ctype = <PetscDataType> type
         cdef PetscInt cblocksize = asInt(blocksize)
         fieldname = str2bytes(fieldname, &cfieldname)
         CHKERR( DMSwarmRegisterPetscDatatypeField(self.dm, cfieldname, cblocksize, ctype) )
+
+    def getField(self, fieldname):
+        cdef const_char *cfieldname = NULL
+        cdef PetscInt blocksize
+        cdef PetscDataType ctype
+        cdef PetscReal *data
+        fieldname = str2bytes(fieldname, &cfieldname)
+        CHKERR( DMSwarmGetField(self.dm, cfieldname, &blocksize, &ctype, <void**> &data) )
+        cdef ndarray rarray = array_r(asInt(self.getLocalSize()), data)
+        return rarray, toInt(ctype)
+
+    def restoreField(self, fieldname):
+        cdef const_char *cfieldname = NULL
+        cdef PetscInt blocksize
+        cdef PetscDataType ctype
+        fieldname = str2bytes(fieldname, &cfieldname)
+        CHKERR( DMSwarmRestoreField(self.dm, cfieldname, &blocksize, &ctype, <void**> 0) )
 
     def vectorDefineField(self, fieldname):
         cdef const_char *cval = NULL
@@ -128,7 +151,7 @@ cdef class DMSwarm(DM):
 
     def setCellDM(self, DMSwarm dm):
         CHKERR( DMSwarmSetCellDM(self.dm, dm.dm) )
-
+        
     # To Check
     def getCellDM(self):
         cdef DMSwarm dmswarm = DMSwarm() 
