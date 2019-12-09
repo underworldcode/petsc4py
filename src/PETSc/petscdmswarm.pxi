@@ -2,7 +2,7 @@
 
 cdef extern from * nogil:
 
-    ctypedef enum PetscDataType "DataType":
+    ctypedef enum PetscDataType:
         PETSC_DATATYPE_UNKNOWN
         PETSC_DOUBLE
         PETSC_COMPLEX
@@ -51,7 +51,7 @@ cdef extern from * nogil:
     int DMSwarmInitializeFieldRegister(PetscDM)
     int DMSwarmFinalizeFieldRegister(PetscDM)
     int DMSwarmSetLocalSizes(PetscDM,PetscInt,PetscInt)
-#    int DMSwarmRegisterPetscDatatypeField(PetscDM,const char[],PetscInt,PetscDataType)
+    int DMSwarmRegisterPetscDatatypeField(PetscDM,const char[],PetscInt,PetscDataType)
 #    int DMSwarmRegisterUserStructField(PetscDM,const char[],size_t)
 #    int DMSwarmRegisterUserDatatypeField(PetscDM,const char[],size_t,PetscInt)
 #    int DMSwarmGetField(PetscDM,const char[],PetscInt*,PetscDataType*,void**)

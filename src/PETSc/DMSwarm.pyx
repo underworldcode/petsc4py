@@ -73,6 +73,13 @@ cdef class DMSwarm(DM):
         CHKERR( DMSwarmSetLocalSizes(self.dm, cnlocal, cbuffer) )
         return self
 
+    def registerPetscDataTypeField(self, fieldname, blocksize, type):
+        cdef const_char *cfieldname = NULL
+        cdef PetscDataType ctype = type
+        cdef PetscInt cblocksize = asInt(blocksize)
+        fieldname = str2bytes(fieldname, &cfieldname)
+        CHKERR( DMSwarmRegisterPetscDatatypeField(self.dm, cfieldname, cblocksize, ctype) )
+
     def vectorDefineField(self, fieldname):
         cdef const_char *cval = NULL
         fieldname = str2bytes(fieldname, &cval)
