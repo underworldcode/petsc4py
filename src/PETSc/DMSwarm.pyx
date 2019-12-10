@@ -1,26 +1,22 @@
 # --------------------------------------------------------------------
 
 class DMSwarmType(object):
-
     BASIC = DMSWARM_BASIC
     PIC = DMSWARM_PIC
 
 class DMSwarmMigrateType(object):
-
     MIGRATE_BASIC = DMSWARM_MIGRATE_BASIC
     MIGRATE_DMCELLNSCATTER = DMSWARM_MIGRATE_DMCELLNSCATTER
     MIGRATE_DMCELLEXACT = DMSWARM_MIGRATE_DMCELLEXACT
     MIGRATE_USER = DMSWARM_MIGRATE_USER
 
 class DMSwarmCollectType(object):
-
     COLLECT_BASIC = DMSWARM_COLLECT_BASIC
     COLLECT_DMDABOUNDINGBOX = DMSWARM_COLLECT_DMDABOUNDINGBOX
     COLLECT_GENERAL = DMSWARM_COLLECT_GENERAL
     COLLECT_USER = DMSWARM_COLLECT_USER
 
 class DMSwarmPICLayoutType(object):
-
     LAYOUT_REGULAR = DMSWARMPIC_LAYOUT_REGULAR
     LAYOUT_GAUSS = DMSWARMPIC_LAYOUT_GAUSS
     LAYOUT_SUBDIVISION = DMSWARMPIC_LAYOUT_SUBDIVISION
@@ -38,7 +34,7 @@ cdef class DMSwarm(DM):
         cdef PetscDM newdm = NULL
         CHKERR( DMCreate(ccomm, &newdm) )
         PetscCLEAR(self.obj); self.dm = newdm
-        DM.setType(self, "swarm")
+        CHKERR( DMSetType(self.dm, DMSWARM) )
         return self
 
     def createGlobalVectorFromField(self, fieldname):
@@ -88,18 +84,20 @@ cdef class DMSwarm(DM):
 
     def getField(self, fieldname):
         cdef const_char *cfieldname = NULL
-        cdef PetscInt blocksize
-        cdef PetscDataType ctype
-        cdef PetscReal *data
+        cdef PetscInt blocksize = asInt(0)
+        cdef PetscDataType ctype = <PetscDataType> 0 
+        cdef PetscReal *data = NULL
+        cdef PetscInt nlocal = asInt(0)
         fieldname = str2bytes(fieldname, &cfieldname)
         CHKERR( DMSwarmGetField(self.dm, cfieldname, &blocksize, &ctype, <void**> &data) )
-        array = array_r(asInt(self.getLocalSize()), data)
+        CHKERR( DMSwarmGetLocalSize(self.dm, &nlocal) )
+        array = array_r(nlocal, data)
         return array
 
     def restoreField(self, fieldname):
         cdef const_char *cfieldname = NULL
-        cdef PetscInt blocksize
-        cdef PetscDataType ctype
+        cdef PetscInt blocksize = asInt(0)
+        cdef PetscDataType ctype = <PetscDataType> 0
         fieldname = str2bytes(fieldname, &cfieldname)
         CHKERR( DMSwarmRestoreField(self.dm, cfieldname, &blocksize, &ctype, <void**> 0) )
 
@@ -128,19 +126,17 @@ cdef class DMSwarm(DM):
         CHKERR( DMSwarmCopyPoint(self.dm, cpi, cpj) )
 
     def getLocalSize(self):
-        cdef PetscInt size = 0
+        cdef PetscInt size = asInt(0)
         CHKERR( DMSwarmGetLocalSize(self.dm, &size) )
         return toInt(size)
 
     def getSize(self):
-        cdef PetscInt size = 0
+        cdef PetscInt size = asInt(0)
         CHKERR( DMSwarmGetSize(self.dm, &size) )
         return toInt(size)
 
     def migrate(self, remove_sent_points=False):
-        cdef PetscBool remove_pts = asBool(False)
-        if remove_sent_points:
-            remove_pts = asBool(True)
+        cdef PetscBool remove_pts = asBool(remove_sent_points)
         CHKERR( DMSwarmMigrate(self.dm, remove_pts) )
 
     def collectViewCreate(self):
@@ -163,16 +159,16 @@ cdef class DMSwarm(DM):
         CHKERR( DMSwarmSetType(self.dm, cdmswarm_type) )
 
     def setPointsUniformCoordinates(self, min, max, npoints, mode=None):
-        cdef PetscInt dim = 0
+        cdef PetscInt dim = asInt(0)
         CHKERR( DMGetDimension(self.dm, &dim) )
         cdef PetscReal cmin[3]
-        cmin[0] = cmin[1] = cmin[2] = 0
+        cmin[0] = cmin[1] = cmin[2] = asReal(0.)
         for i from 0 <= i < dim: cmin[i] = min[i]
         cdef PetscReal cmax[3]
-        cmax[0] = cmax[1] = cmax[2] = 0
+        cmax[0] = cmax[1] = cmax[2] = asReal(0.)
         for i from 0 <= i < dim: cmax[i] = max[i]
         cdef PetscInt cnpoints[3]
-        cnpoints[0] = cnpoints[1] = cnpoints[2] = 0
+        cnpoints[0] = cnpoints[1] = cnpoints[2] = asInt(0)
         for i from 0 <= i < dim: cnpoints[i] = npoints[i]
         cdef PetscInsertMode cmode = insertmode(mode) 
         CHKERR( DMSwarmSetPointsUniformCoordinates(self.dm, cmin, cmax, cnpoints, cmode) )
@@ -212,8 +208,7 @@ cdef class DMSwarm(DM):
         cdef PetscInt cnfields = asInt(len(fieldnames))
         cdef const char** cfieldnames = NULL
         for i from 0 <= i < cnfields:
-            fieldname = str2bytes(fieldname, &cval)
-            cfieldnames[i] = cval
+            fieldnames[i] = str2bytes(fieldnames[i], &cval)
         CHKERR( DMSwarmViewFieldsXDMF(self.dm, cfilename, cnfields, cfieldnames ) )
 
     def viewXDMF(self, filename):
@@ -229,8 +224,8 @@ cdef class DMSwarm(DM):
 
     def sortGetPointsPerCell(self, e):
         cdef PetscInt ce = asInt(e)
-        cdef PetscInt cnpoints
-        cdef PetscInt *cpidlist
+        cdef PetscInt cnpoints = asInt(0)
+        cdef PetscInt *cpidlist = NULL
         cdef list pidlist = []
         CHKERR( DMSwarmSortGetPointsPerCell(self.dm, ce, &cnpoints, &cpidlist) )
         npoints = asInt(cnpoints)
@@ -239,18 +234,18 @@ cdef class DMSwarm(DM):
 
     def sortGetNumberOfPointsPerCell(self, e):
         cdef PetscInt ce = asInt(e)
-        cdef PetscInt npoints
+        cdef PetscInt npoints = asInt(0)
         CHKERR( DMSwarmSortGetNumberOfPointsPerCell(self.dm, ce, &npoints) )
         return toInt(npoints)
 
     def sortGetIsValid(self):
-        cdef PetscBool isValid 
+        cdef PetscBool isValid = asBool(False)
         CHKERR( DMSwarmSortGetIsValid(self.dm, &isValid) )
         return toBool(isValid)
 
     def sortGetSizes(self):
-        cdef PetscInt ncells
-        cdef PetscInt npoints
+        cdef PetscInt ncells = asInt(0)
+        cdef PetscInt npoints = asInt(0)
         CHKERR( DMSwarmSortGetSizes(self.dm, &ncells, &npoints) )
         return (toInt(ncells), toInt(npoints))
 
