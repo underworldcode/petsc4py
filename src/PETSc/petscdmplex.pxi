@@ -48,6 +48,7 @@ cdef extern from * nogil:
     int DMPlexCreateClosureIndex(PetscDM,PetscSection)
     #int PetscSectionCreateGlobalSectionLabel(PetscSection,PetscSF,PetscBool,PetscDMLabel,PetscInt,PetscSection*)
 
+    int DMPlexInsertBoundaryValues(PetscDM, PetscBool, PetscVec, PetscReal, PetscVec, PetscVec, PetscVec)
     int DMPlexGetCellNumbering(PetscDM,PetscIS*)
     int DMPlexGetVertexNumbering(PetscDM,PetscIS*)
     int DMPlexCreatePointNumbering(PetscDM,PetscIS*)
@@ -124,6 +125,7 @@ cdef extern from * nogil:
     int DMPlexGetRefinementUniform(PetscDM,PetscBool*)
     int DMPlexSetRefinementUniform(PetscDM,PetscBool)
 
+    int DMPlexSetSNESLocalFEM(PetscDM, void*, void*, void*)
     #int DMPlexGetNumFaceVertices(PetscDM,PetscInt,PetscInt,PetscInt*)
     #int DMPlexGetOrientedFace(PetscDM,PetscInt,PetscInt,const_PetscInt[],PetscInt,PetscInt[],PetscInt[],PetscInt[],PetscBool*)
 

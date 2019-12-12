@@ -597,6 +597,22 @@ cdef class DMPlex(DM):
         cdef PetscSection csec = sec.sec if sec is not None else NULL
         CHKERR( DMPlexCreateClosureIndex(self.dm, csec) )
 
+    def setSNESLocalFEM(self):
+        cdef void *boundary_ctx = NULL
+        cdef void *residual_ctx = NULL
+        cdef void *jacobian_ctx = NULL
+        CHKERR( DMPlexSetSNESLocalFEM(self.dm, &boundary_ctx, &residual_ctx, &jacobian_ctx) )
+
+    def insertBoundaryValues(self, insertEssential, Vec locX, time):
+        cdef PetscBool cinsertEssential = asBool(insertEssential)
+        cdef PetscReal ctime = asReal(time)
+        cdef Vec faceGeomFVM = Vec()
+        cdef Vec cellGeomFVM = Vec()
+        cdef Vec gradFVM = Vec()
+        CHKERR( DMPlexInsertBoundaryValues(
+            self.dm, cinsertEssential, locX.vec, ctime, faceGeomFVM.vec, cellGeomFVM.vec, gradFVM.vec)
+            )
+
     #
 
     def setRefinementUniform(self, refinementUniform=True):
