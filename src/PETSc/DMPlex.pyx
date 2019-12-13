@@ -601,7 +601,7 @@ cdef class DMPlex(DM):
         cdef void *boundary_ctx = NULL
         cdef void *residual_ctx = NULL
         cdef void *jacobian_ctx = NULL
-        CHKERR( DMPlexSetSNESLocalFEM(self.dm, &boundary_ctx, &residual_ctx, &jacobian_ctx) )
+        CHKERR( DMPlexSetSNESLocalFEM(self.dm, NULL, NULL, NULL) )
 
     def insertBoundaryValues(self, insertEssential, Vec locX, time):
         cdef PetscBool cinsertEssential = asBool(insertEssential)
